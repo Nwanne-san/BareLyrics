@@ -3,7 +3,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Bare Lyrics",
-  description: "Created with v0",
+  description: "Discover and view your favorite song lyrics",
+  icons: {
+    icon: "/logo-low.jpg",
+  },
 };
 
 export default function RootLayout({

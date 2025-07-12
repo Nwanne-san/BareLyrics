@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Music, Users, Heart } from "lucide-react";
 import Link from "next/link";
 import { SearchDropdown } from "@/components/search-dropdown";
+import Image from "next/image";
 
 export default function HomePage() {
   return (
@@ -9,11 +10,8 @@ export default function HomePage() {
       {/* Header */}
       <header className="border-b border-gray-200">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
-              <Music className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-black">BareLyrics</span>
+          <Link href="/" className="flex items-center space-x-">
+            <Image src="/logo.png" alt="" width={200} height={80}  className="h-16 w-24"/>
           </Link>
           <nav className="hidden md:flex space-x-6">
             <Link
