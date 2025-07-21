@@ -1,27 +1,27 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createSongSubmission } from "@/lib/database";
-import { songSubmissionSchema } from "@/lib/validation";
+import { createSongDirect } from "@/lib/database";
+import { adminSongSchema } from "@/lib/validation";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
     // Validate the data
-    const validatedData = songSubmissionSchema.parse(body);
+    const validatedData = adminSongSchema.parse(body);
 
-    // Create the submission for review (not direct to database)
-    const newSubmission = await createSongSubmission(validatedData);
+    // Create the song directly (admin bypass)
+    const newSong = await createSongDirect(validatedData);
 
     return NextResponse.json(
       {
         success: true,
-        message: "Song submitted for review! Our team will review it shortly.",
-        submission: newSubmission,
+        message: "Song created successfully!",
+        song: newSong,
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Song submission error:", error);
+    console.error("Admin song creation error:", error);
 
     if (error instanceof Error && error.name === "ZodError") {
       return NextResponse.json(
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        message: "Failed to submit song for review. Please try again.",
+        message: "Failed to create song. Please try again.",
       },
       { status: 500 }
     );

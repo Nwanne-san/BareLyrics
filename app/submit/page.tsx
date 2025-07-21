@@ -26,6 +26,8 @@ export default function SubmitPage() {
     lyrics: "",
     submitter_name: "",
     submitter_email: "",
+    submission_type: "new",
+    original_song_id: undefined,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -76,7 +78,7 @@ export default function SubmitPage() {
     setSubmitStatus("idle");
 
     try {
-      const response = await fetch("/api/songs", {
+      const response = await fetch("/api/submissions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -100,6 +102,8 @@ export default function SubmitPage() {
           lyrics: "",
           submitter_name: "",
           submitter_email: "",
+          submission_type: "new",
+          original_song_id: undefined,
         });
       } else {
         setSubmitStatus("error");
@@ -152,7 +156,8 @@ export default function SubmitPage() {
           </h1>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             Help us grow our collection by submitting new lyrics or correcting
-            existing ones. All submissions are reviewed by the BareLyrics team.
+            existing ones. All submissions are reviewed by the BareLyrics team
+            before being added to the database.
           </p>
         </div>
 
@@ -182,6 +187,45 @@ export default function SubmitPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <form className="space-y-6" onSubmit={handleSubmit}>
+                  {/* Submission Type */}
+                  <div>
+                    <Label className="text-black font-medium">
+                      Submission Type *
+                    </Label>
+                    <div className="mt-2 space-x-4">
+                      <label className="inline-flex items-center">
+                        <input
+                          type="radio"
+                          value="new"
+                          checked={formData.submission_type === "new"}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "submission_type",
+                              e.target.value as "new" | "correction"
+                            )
+                          }
+                          className="mr-2"
+                        />
+                        New Song
+                      </label>
+                      <label className="inline-flex items-center">
+                        <input
+                          type="radio"
+                          value="correction"
+                          checked={formData.submission_type === "correction"}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "submission_type",
+                              e.target.value as "new" | "correction"
+                            )
+                          }
+                          className="mr-2"
+                        />
+                        Correction to Existing Song
+                      </label>
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label
@@ -417,8 +461,8 @@ export default function SubmitPage() {
                   >
                     <Send className="w-4 h-4 mr-2" />
                     {isSubmitting
-                      ? "Submitting..."
-                      : "Submit to BareLyrics Team"}
+                      ? "Submitting for Review..."
+                      : "Submit for Review"}
                   </Button>
                 </form>
               </CardContent>
@@ -437,12 +481,25 @@ export default function SubmitPage() {
               <CardContent className="space-y-4 text-sm">
                 <div>
                   <h4 className="font-medium text-black mb-2 font-poppins">
+                    Review Process
+                  </h4>
+                  <ul className="space-y-1 text-gray-600">
+                    <li>• All submissions go through admin review</li>
+                    <li>• Typical review time: 1-3 business days</li>
+                    <li>• You'll be notified if we need clarification</li>
+                    <li>• Approved songs are added to the main database</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h4 className="font-medium text-black mb-2 font-poppins">
                     Quality Standards
                   </h4>
                   <ul className="space-y-1 text-gray-600">
                     <li>• Ensure lyrics are accurate and complete</li>
                     <li>• Include proper formatting and line breaks</li>
                     <li>• Use correct spelling and punctuation</li>
+                    <li>• Verify song information is correct</li>
                   </ul>
                 </div>
 
@@ -454,18 +511,16 @@ export default function SubmitPage() {
                     <li>• New song lyrics not in our database</li>
                     <li>• Corrections to existing lyrics</li>
                     <li>• Missing information for existing songs</li>
+                    <li>• Updated or alternative versions</li>
                   </ul>
                 </div>
 
-                <div>
-                  <h4 className="font-medium text-black mb-2 font-poppins">
-                    Review Process
-                  </h4>
-                  <ul className="space-y-1 text-gray-600">
-                    <li>• All submissions are automatically added</li>
-                    <li>• Community moderation helps maintain quality</li>
-                    <li>• Report issues if you find incorrect content</li>
-                  </ul>
+                <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                  <p className="text-xs text-yellow-800">
+                    <strong>Important:</strong> Submissions are now reviewed
+                    before being added to prevent conflicts. This ensures
+                    quality and accuracy in our database.
+                  </p>
                 </div>
 
                 <div className="p-3 bg-gray-50 rounded-lg">

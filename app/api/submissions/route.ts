@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     // Validate the data
     const validatedData = songSubmissionSchema.parse(body);
 
-    // Create the submission for review (not direct to database)
+    // Create the submission for review
     const newSubmission = await createSongSubmission(validatedData);
 
     return NextResponse.json(
