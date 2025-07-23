@@ -16,7 +16,7 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
   return (
     <>
       {!isAdminPage && <Navbar />}
-      <main className={!isAdminPage ? "pt-16" : ""}>{children}</main>
+      <section className={!isAdminPage ? "pt-16" : ""}>{children}</section>
     </>
   )
 }

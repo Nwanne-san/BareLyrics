@@ -152,7 +152,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
@@ -166,7 +166,7 @@ export default function HomePage() {
             </div>
             <div>
               <h3 className="font-semibold mb-4">Explore</h3>
-              <ul className="space-y-2 text-sm text-gray-400">
+              <ul className="space-y-2.5 text-sm text-gray-400">
                 <li>
                   <Link
                     href="/browse"
@@ -195,7 +195,7 @@ export default function HomePage() {
             </div>
             <div>
               <h3 className="font-semibold mb-4">Community</h3>
-              <ul className="space-y-2 text-sm text-gray-400">
+              <ul className="space-y-2.5 text-sm text-gray-400">
                 <li>
                   <Link
                     href="/submit"
@@ -216,7 +216,7 @@ export default function HomePage() {
             </div>
             <div>
               <h3 className="font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2 text-sm text-gray-400">
+              <ul className="space-y-2.5 text-sm text-gray-400">
                 <li>
                   <Link
                     href="/privacy"

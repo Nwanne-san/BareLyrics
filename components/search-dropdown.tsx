@@ -85,7 +85,7 @@ export function SearchDropdown({ placeholder = "Search for songs, artists...", c
         />
         <Button
           onClick={handleSearch}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black hover:bg-gray-800 rounded-full px-6"
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black hover:bg-gray-800 rounded-full px-6"
         >
           Search
         </Button>

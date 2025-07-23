@@ -1,8 +1,6 @@
-import type { Metadata } from "next";
 import "./globals.css";
-import { LayoutWrapper } from "@/components/layout-wrapper";
-import { ThemeProvider } from "next-themes";
-import { Toaster } from "sonner";
+import type { Metadata } from "next";
+import { ClientProviders } from "./client-provider";
 
 export const metadata: Metadata = {
   title: "Bare Lyrics",
@@ -14,22 +12,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body>
-        {" "}
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <LayoutWrapper>{children}</LayoutWrapper>
-          <Toaster />
-        </ThemeProvider>
+        <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
   );
