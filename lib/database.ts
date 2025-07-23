@@ -388,13 +388,10 @@ export async function getAllArtists(): Promise<
     }
 
     // Count songs per artist
-    const artistCounts = data.reduce(
-      (acc: { [x: string]: any }, song: { artist: string | number }) => {
-        acc[song.artist] = (acc[song.artist] || 0) + 1;
-        return acc;
-      },
-      {} as Record<string, number>
-    );
+    const artistCounts = data.reduce((acc, song) => {
+      acc[song.artist] = (acc[song.artist] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
 
     return Object.entries(artistCounts).map(([name, songCount]) => ({
       name,
@@ -558,9 +555,25 @@ export async function updateSong(
   songData: Partial<Song>
 ): Promise<Song> {
   try {
+    // First, let's get the current song to make sure it exists
+    const { data: currentSong, error: fetchError } = await supabase
+      .from("songs")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (fetchError) {
+      console.error("Error fetching song for update:", fetchError);
+      throw new Error("Song not found");
+    }
+
+    // Now update the song
     const { data, error } = await supabase
       .from("songs")
-      .update(songData)
+      .update({
+        ...songData,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", id)
       .select()
       .single();
@@ -568,6 +581,10 @@ export async function updateSong(
     if (error) {
       console.error("Supabase updateSong error:", error);
       throw new Error("Failed to update song");
+    }
+
+    if (!data) {
+      throw new Error("No data returned from update");
     }
 
     return data;

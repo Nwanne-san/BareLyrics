@@ -44,6 +44,11 @@ import {
   type SongSubmission,
 } from "@/lib/database";
 import { adminSongSchema, type AdminSongData } from "@/lib/validation";
+import { ImageUpload } from "@/components/image-upload";
+import { uploadImageToSupabase } from "@/lib/image-upload";
+import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
+import { EditSongModal } from "@/components/edit-song-modal";
+import { AdminSetupBanner } from "@/components/admin-setup-banner";
 
 interface AdminDashboardProps {
   currentUser: AdminUser | null;
@@ -59,6 +64,26 @@ export function AdminDashboard({ currentUser }: AdminDashboardProps) {
     useState<SongSubmission | null>(null);
   const [showCreateUser, setShowCreateUser] = useState(false);
 
+  // Delete modal state
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    song: Song | null;
+    isDeleting: boolean;
+  }>({
+    isOpen: false,
+    song: null,
+    isDeleting: false,
+  });
+
+  // Edit modal state
+  const [editModal, setEditModal] = useState<{
+    isOpen: boolean;
+    song: Song | null;
+  }>({
+    isOpen: false,
+    song: null,
+  });
+
   // Form states
   const [newSong, setNewSong] = useState<AdminSongData>({
     title: "",
@@ -69,6 +94,7 @@ export function AdminDashboard({ currentUser }: AdminDashboardProps) {
     cover: "",
     lyrics: "",
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [newUser, setNewUser] = useState({
     email: "",
     name: "",
@@ -139,7 +165,26 @@ export function AdminDashboard({ currentUser }: AdminDashboardProps) {
 
     setIsSubmitting(true);
     try {
-      await createSongDirect(newSong);
+      let coverUrl = newSong.cover;
+
+      // Upload image if a file is selected
+      if (imageFile) {
+        const uploadResult = await uploadImageToSupabase(
+          imageFile,
+          "song-covers"
+        );
+        if (uploadResult.success && uploadResult.url) {
+          coverUrl = uploadResult.url;
+        } else {
+          throw new Error(uploadResult.error || "Failed to upload image");
+        }
+      }
+
+      await createSongDirect({
+        ...newSong,
+        cover: coverUrl,
+      });
+
       setNewSong({
         title: "",
         artist: "",
@@ -149,6 +194,7 @@ export function AdminDashboard({ currentUser }: AdminDashboardProps) {
         cover: "",
         lyrics: "",
       });
+      setImageFile(null);
       await loadData();
       alert("Song created successfully!");
     } catch (error) {
@@ -219,16 +265,41 @@ export function AdminDashboard({ currentUser }: AdminDashboardProps) {
     }
   };
 
-  const handleDeleteSong = async (songId: number) => {
-    if (!confirm("Are you sure you want to delete this song?")) return;
+  const handleDeleteSong = async () => {
+    if (!deleteModal.song) return;
+
+    setDeleteModal((prev) => ({ ...prev, isDeleting: true }));
 
     try {
-      await deleteSong(songId);
-      await loadData();
-      alert("Song deleted successfully!");
+      await deleteSong(deleteModal.song.id);
+      await loadData(); // This will refresh the songs list
+      setDeleteModal({ isOpen: false, song: null, isDeleting: false });
     } catch (error) {
       console.error("Error deleting song:", error);
       alert("Failed to delete song");
+      setDeleteModal((prev) => ({ ...prev, isDeleting: false }));
+    }
+  };
+
+  const handleEditSong = (song: Song) => {
+    setEditModal({ isOpen: true, song });
+  };
+
+  const handleEditSave = async () => {
+    await loadData(); // This will refresh the songs list
+    setEditModal({ isOpen: false, song: null });
+  };
+
+  const handleImageChange = (value: string | File | null) => {
+    if (value instanceof File) {
+      setImageFile(value);
+      setNewSong((prev) => ({ ...prev, cover: "" })); // Clear URL when file is selected
+    } else if (typeof value === "string") {
+      setNewSong((prev) => ({ ...prev, cover: value }));
+      setImageFile(null); // Clear file when URL is set
+    } else {
+      setImageFile(null);
+      setNewSong((prev) => ({ ...prev, cover: "" }));
     }
   };
 
@@ -288,6 +359,8 @@ export function AdminDashboard({ currentUser }: AdminDashboardProps) {
       </header>
 
       <div className="container mx-auto px-4 py-8">
+        <AdminSetupBanner />
+
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList
             className={`grid w-full ${
@@ -449,128 +522,136 @@ export function AdminDashboard({ currentUser }: AdminDashboardProps) {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleCreateSong} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="title">Song Title *</Label>
-                      <Input
-                        id="title"
-                        value={newSong.title}
-                        onChange={(e) =>
-                          setNewSong((prev) => ({
-                            ...prev,
-                            title: e.target.value,
-                          }))
-                        }
-                        className={formErrors.title ? "border-red-500" : ""}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Left Column - Image Upload */}
+                    <div className="lg:col-span-1">
+                      <ImageUpload
+                        value={imageFile || newSong.cover || null}
+                        onChange={handleImageChange}
+                        label="Cover Image"
+                        disabled={isSubmitting}
                       />
-                      {formErrors.title && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {formErrors.title}
-                        </p>
-                      )}
                     </div>
-                    <div>
-                      <Label htmlFor="artist">Artist *</Label>
-                      <Input
-                        id="artist"
-                        value={newSong.artist}
-                        onChange={(e) =>
-                          setNewSong((prev) => ({
-                            ...prev,
-                            artist: e.target.value,
-                          }))
-                        }
-                        className={formErrors.artist ? "border-red-500" : ""}
-                      />
-                      {formErrors.artist && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {formErrors.artist}
-                        </p>
-                      )}
-                    </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="album">Album</Label>
-                      <Input
-                        id="album"
-                        value={newSong.album}
-                        onChange={(e) =>
-                          setNewSong((prev) => ({
-                            ...prev,
-                            album: e.target.value,
-                          }))
-                        }
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="genre">Genre</Label>
-                      <Input
-                        id="genre"
-                        value={newSong.genre}
-                        onChange={(e) =>
-                          setNewSong((prev) => ({
-                            ...prev,
-                            genre: e.target.value,
-                          }))
-                        }
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="year">Year</Label>
-                      <Input
-                        id="year"
-                        type="number"
-                        value={newSong.year || ""}
-                        onChange={(e) =>
-                          setNewSong((prev) => ({
-                            ...prev,
-                            year: e.target.value
-                              ? Number.parseInt(e.target.value)
-                              : undefined,
-                          }))
-                        }
-                      />
-                    </div>
-                  </div>
+                    {/* Right Column - Form Fields */}
+                    <div className="lg:col-span-2 space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="title">Song Title *</Label>
+                          <Input
+                            id="title"
+                            value={newSong.title}
+                            onChange={(e) =>
+                              setNewSong((prev) => ({
+                                ...prev,
+                                title: e.target.value,
+                              }))
+                            }
+                            className={formErrors.title ? "border-red-500" : ""}
+                            disabled={isSubmitting}
+                          />
+                          {formErrors.title && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {formErrors.title}
+                            </p>
+                          )}
+                        </div>
+                        <div>
+                          <Label htmlFor="artist">Artist *</Label>
+                          <Input
+                            id="artist"
+                            value={newSong.artist}
+                            onChange={(e) =>
+                              setNewSong((prev) => ({
+                                ...prev,
+                                artist: e.target.value,
+                              }))
+                            }
+                            className={
+                              formErrors.artist ? "border-red-500" : ""
+                            }
+                            disabled={isSubmitting}
+                          />
+                          {formErrors.artist && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {formErrors.artist}
+                            </p>
+                          )}
+                        </div>
+                      </div>
 
-                  <div>
-                    <Label htmlFor="cover">Cover Image URL</Label>
-                    <Input
-                      id="cover"
-                      type="url"
-                      value={newSong.cover}
-                      onChange={(e) =>
-                        setNewSong((prev) => ({
-                          ...prev,
-                          cover: e.target.value,
-                        }))
-                      }
-                    />
-                  </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <Label htmlFor="album">Album</Label>
+                          <Input
+                            id="album"
+                            value={newSong.album}
+                            onChange={(e) =>
+                              setNewSong((prev) => ({
+                                ...prev,
+                                album: e.target.value,
+                              }))
+                            }
+                            disabled={isSubmitting}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="genre">Genre</Label>
+                          <Input
+                            id="genre"
+                            value={newSong.genre}
+                            onChange={(e) =>
+                              setNewSong((prev) => ({
+                                ...prev,
+                                genre: e.target.value,
+                              }))
+                            }
+                            disabled={isSubmitting}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="year">Year</Label>
+                          <Input
+                            id="year"
+                            type="number"
+                            value={newSong.year || ""}
+                            onChange={(e) =>
+                              setNewSong((prev) => ({
+                                ...prev,
+                                year: e.target.value
+                                  ? Number.parseInt(e.target.value)
+                                  : undefined,
+                              }))
+                            }
+                            disabled={isSubmitting}
+                          />
+                        </div>
+                      </div>
 
-                  <div>
-                    <Label htmlFor="lyrics">Lyrics *</Label>
-                    <Textarea
-                      id="lyrics"
-                      value={newSong.lyrics}
-                      onChange={(e) =>
-                        setNewSong((prev) => ({
-                          ...prev,
-                          lyrics: e.target.value,
-                        }))
-                      }
-                      className={`min-h-[300px] ${
-                        formErrors.lyrics ? "border-red-500" : ""
-                      }`}
-                      placeholder="Enter the complete song lyrics..."
-                    />
-                    {formErrors.lyrics && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {formErrors.lyrics}
-                      </p>
-                    )}
+                      <div>
+                        <Label htmlFor="lyrics">Lyrics *</Label>
+                        <Textarea
+                          id="lyrics"
+                          value={newSong.lyrics}
+                          onChange={(e) =>
+                            setNewSong((prev) => ({
+                              ...prev,
+                              lyrics: e.target.value,
+                            }))
+                          }
+                          className={`min-h-[300px] ${
+                            formErrors.lyrics ? "border-red-500" : ""
+                          }`}
+                          placeholder="Enter the complete song lyrics..."
+                          disabled={isSubmitting}
+                        />
+                        {formErrors.lyrics && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {formErrors.lyrics}
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
                   <Button
@@ -766,14 +847,24 @@ export function AdminDashboard({ currentUser }: AdminDashboardProps) {
                           </p>
                         </div>
                         <div className="flex space-x-2">
-                          <Button variant="outline" size="sm">
+                          <Button
+                            onClick={() => handleEditSong(song)}
+                            variant="outline"
+                            size="sm"
+                          >
                             <Edit className="w-4 h-4 mr-1" />
                             Edit
                           </Button>
                           {currentUser &&
                             hasRequiredRole(currentUser.role, "admin") && (
                               <Button
-                                onClick={() => handleDeleteSong(song.id)}
+                                onClick={() =>
+                                  setDeleteModal({
+                                    isOpen: true,
+                                    song,
+                                    isDeleting: false,
+                                  })
+                                }
                                 variant="destructive"
                                 size="sm"
                               >
@@ -949,6 +1040,31 @@ export function AdminDashboard({ currentUser }: AdminDashboardProps) {
             </TabsContent>
           )}
         </Tabs>
+
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmationModal
+          isOpen={deleteModal.isOpen}
+          onClose={() =>
+            setDeleteModal({ isOpen: false, song: null, isDeleting: false })
+          }
+          onConfirm={handleDeleteSong}
+          title="Delete Song"
+          description="Are you sure you want to delete this song? This action cannot be undone and will permanently remove the song from the database."
+          itemName={
+            deleteModal.song
+              ? `${deleteModal.song.title} by ${deleteModal.song.artist}`
+              : ""
+          }
+          isDeleting={deleteModal.isDeleting}
+        />
+
+        {/* Edit Song Modal */}
+        <EditSongModal
+          isOpen={editModal.isOpen}
+          onClose={() => setEditModal({ isOpen: false, song: null })}
+          onSave={handleEditSave}
+          song={editModal.song}
+        />
       </div>
     </div>
   );

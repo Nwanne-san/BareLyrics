@@ -10,6 +10,7 @@ import {
   ArrowRight,
   Check,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function UpgradePage() {
@@ -19,10 +20,7 @@ export default function UpgradePage() {
       <header className="border-b border-gray-200">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
-              <Music className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-black">BareLyrics</span>
+            <Image src='/logo-black.png' alt="BareLyrics Logo" width={80} height={40} />
           </Link>
           <nav className="hidden md:flex space-x-6">
             <Link

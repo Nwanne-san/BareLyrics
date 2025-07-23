@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Bare Lyrics",
   description: "Discover and view your favorite song lyrics",
   icons: {
-    icon: "/logo-low.jpg",
+    icon: "/logo.png",
   },
 };
 
