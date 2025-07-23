@@ -55,7 +55,7 @@ export default function Navbar() {
             <Link href="/" className="flex items-center space-x-2">
               <div className="relative">
                 <motion.div
-                  whileHover={{ rotate: 360 }}
+                  whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.6 }}
                   className=" bg-black rounded-full flex items-center justify-center"
                 >
