@@ -14,31 +14,7 @@ export default async function BrowsePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="border-b border-gray-200">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
-            <Image src='/logo-black.png' alt="BareLyrics Logo" width={80} height={40} />
-          </Link>
-          <nav className="hidden md:flex space-x-6">
-            <Link href="/browse" className="text-black font-medium">
-              Browse
-            </Link>
-            <Link
-              href="/submit"
-              className="text-gray-600 hover:text-black transition-colors"
-            >
-              Submit Lyrics
-            </Link>
-            <Link
-              href="/contact"
-              className="text-gray-600 hover:text-black transition-colors"
-            >
-              Contact
-            </Link>
-          </nav>
-        </div>
-      </header>
+   
 
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}

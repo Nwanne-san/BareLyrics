@@ -34,40 +34,11 @@ export default async function SongPage(props: { params: { id: string } }) {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="border-b border-gray-200">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
-              <Music className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-black">BareLyrics</span>
-          </Link>
-          <nav className="hidden md:flex space-x-6">
-            <Link
-              href="/browse"
-              className="text-gray-600 hover:text-black transition-colors"
-            >
-              Browse
-            </Link>
-            <Link
-              href="/submit"
-              className="text-gray-600 hover:text-black transition-colors"
-            >
-              Submit Lyrics
-            </Link>
-            <Link
-              href="/contact"
-              className="text-gray-600 hover:text-black transition-colors"
-            >
-              Contact
-            </Link>
-          </nav>
-        </div>
-      </header>
+  
 
       {/* Breadcrumb */}
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
+      <div className="container mx-auto px-4 py-4 ">
+        <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600">
           <Link href="/" className="hover:text-black">
             Home
           </Link>
@@ -83,24 +54,35 @@ export default async function SongPage(props: { params: { id: string } }) {
             {song.artist}
           </Link>
           <ChevronRight className="w-4 h-4" />
-          <span className="text-black">{song.title}</span>
+          <span className="text-black truncate max-w-[100px] sm:max-w-[200px]">
+            {song.title}
+          </span>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4 sm:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
           {/* Main Content - Lyrics Priority */}
-          <div className="lg:col-span-3 order-2 lg:order-1">
+          <div className="lg:col-span-3 order-1">
             {/* Compact Song Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-2 font-poppins">
-                {song.title}
-              </h1>
-              <Link href={`/artist/${encodeURIComponent(song.artist)}`}>
-                <p className="text-xl md:text-2xl text-gray-600 mb-4 hover:text-black transition-colors cursor-pointer">
-                  {song.artist}
-                </p>
-              </Link>
+            <div className="mb-8 flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black mb-2 font-poppins">
+                  {song.title}
+                </h1>
+                <Link href={`/artist/${encodeURIComponent(song.artist)}`}>
+                  <p className="text-xl md:text-2xl text-gray-600 mb-4 hover:text-black transition-colors cursor-pointer">
+                    {song.artist}
+                  </p>
+                </Link>
+              </div>
+              <Image
+                src={song.cover || "/placeholder.svg"}
+                alt={`${song.title} cover`}
+                width={150}
+                height={200}
+                className=" sm:w-full aspect-square  rounded-lg object-cover mb-4"
+              />
             </div>
 
             {/* Lyrics - Main Priority */}
@@ -166,7 +148,7 @@ export default async function SongPage(props: { params: { id: string } }) {
           </div>
 
           {/* Sidebar - Secondary Info */}
-          <div className="lg:col-span-1 order-1 lg:order-2">
+          <div className="lg:col-span-1 order-2">
             {/* Song Details Card */}
             <Card className="border-gray-200 mb-6">
               <CardContent className="p-6">
@@ -175,7 +157,7 @@ export default async function SongPage(props: { params: { id: string } }) {
                   alt={`${song.title} cover`}
                   width={200}
                   height={200}
-                  className="w-full aspect-square rounded-lg object-cover mb-4"
+                  className=" sm:w-full aspect-square  rounded-lg object-cover mb-4"
                 />
                 <div className="space-y-2 text-sm">
                   {song.album && (

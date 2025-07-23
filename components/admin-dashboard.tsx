@@ -49,6 +49,7 @@ import { uploadImageToSupabase } from "@/lib/image-upload";
 import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 import { EditSongModal } from "@/components/edit-song-modal";
 import { AdminSetupBanner } from "@/components/admin-setup-banner";
+import { AdminNavbar } from "./admin-navbar";
 
 interface AdminDashboardProps {
   currentUser: AdminUser | null;
@@ -315,51 +316,11 @@ export function AdminDashboard({ currentUser }: AdminDashboardProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
-              <Music className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-black">
-              BareLyrics Admin
-            </span>
-          </div>
-          <div className="flex items-center space-x-4">
-            {currentUser && (
-              <div className="text-right">
-                <p className="text-sm font-medium text-black">
-                  {currentUser.name}
-                </p>
-                <div className="flex items-center space-x-1">
-                  <Badge
-                    variant={
-                      currentUser.role === "developer"
-                        ? "default"
-                        : currentUser.role === "admin"
-                        ? "secondary"
-                        : "outline"
-                    }
-                  >
-                    {currentUser.role}
-                  </Badge>
-                </div>
-              </div>
-            )}
-            <Button
-              onClick={handleLogout}
-              variant="outline"
-              className="border-gray-300 bg-transparent"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
-          </div>
-        </div>
-      </header>
+     
+      <AdminNavbar currentUser={currentUser}/>
 
       <div className="container mx-auto px-4 py-8">
-        <AdminSetupBanner />
+        {/* <AdminSetupBanner /> */}
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList

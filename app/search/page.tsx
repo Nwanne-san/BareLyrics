@@ -16,47 +16,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="border-b border-gray-200">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
-              <Music className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-black font-poppins">
-              BareLyrics
-            </span>
-          </Link>
-          <nav className="hidden md:flex space-x-6">
-            <Link
-              href="/browse"
-              className="text-gray-600 hover:text-black transition-colors"
-            >
-              Browse
-            </Link>
-            <Link
-              href="/submit"
-              className="text-gray-600 hover:text-black transition-colors"
-            >
-              Submit Lyrics
-            </Link>
-            <Link
-              href="/contact"
-              className="text-gray-600 hover:text-black transition-colors"
-            >
-              Contact
-            </Link>
-          </nav>
-
-          {/* Mobile menu button */}
-          <button className="md:hidden p-2">
-            <div className="w-6 h-0.5 bg-black mb-1"></div>
-            <div className="w-6 h-0.5 bg-black mb-1"></div>
-            <div className="w-6 h-0.5 bg-black"></div>
-          </button>
-        </div>
-      </header>
-
       <div className="container mx-auto px-4 py-8">
         {/* Search Header */}
         <div className="text-center mb-8">

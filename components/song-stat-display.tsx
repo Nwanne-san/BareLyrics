@@ -83,7 +83,7 @@ export function SongStatsDisplay() {
   if (!stats) return null;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       <Card>
         <CardContent className="p-6 text-center">
           <Music className="w-8 h-8 mx-auto mb-2 text-blue-600" />

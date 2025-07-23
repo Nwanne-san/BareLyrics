@@ -10,39 +10,6 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
-            <Image src='/logo-black.png' alt="BareLyrics Logo" width={80} height={40} />
-          </Link>
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link
-              href="/browse"
-              className="text-gray-600 hover:text-black transition-colors"
-            >
-              Browse
-            </Link>
-            <Link
-              href="/database"
-              className="text-gray-600 hover:text-black transition-colors"
-            >
-              Database
-            </Link>
-            <Link
-              href="/submit"
-              className="text-gray-600 hover:text-black transition-colors"
-            >
-              Submit
-            </Link>
-            <Link
-              href="/contact"
-              className="text-gray-600 hover:text-black transition-colors"
-            >
-              Contact
-            </Link>
-          </nav>
-        </div>
-      </header>
 
       {/* Hero Section */}
       <section className="py-20">
