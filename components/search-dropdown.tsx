@@ -1,75 +1,82 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect, useRef } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Search, Music } from "lucide-react"
-import { searchSongs, type Song } from "@/lib/database"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useState, useEffect, useRef } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search, Music } from "lucide-react";
+import { searchSongs, type Song } from "@/lib/database";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface SearchDropdownProps {
-  placeholder?: string
-  className?: string
+  placeholder?: string;
+  className?: string;
 }
 
-export function SearchDropdown({ placeholder = "Search for songs, artists...", className = "" }: SearchDropdownProps) {
-  const [query, setQuery] = useState("")
-  const [results, setResults] = useState<Song[]>([])
-  const [isOpen, setIsOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const searchRef = useRef<HTMLDivElement>(null)
-  const router = useRouter()
+export function SearchDropdown({
+  placeholder = "Search for songs, artists...",
+  className = "",
+}: SearchDropdownProps) {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<Song[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setIsOpen(false)
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const searchDebounced = async () => {
       if (query.trim().length > 0) {
-        setIsLoading(true)
+        setIsLoading(true);
         try {
-          const searchResults = await searchSongs(query)
-          setResults(searchResults.slice(0, 5)) // Limit to 5 results
-          setIsOpen(true)
+          const searchResults = await searchSongs(query);
+          setResults(searchResults.slice(0, 5)); // Limit to 5 results
+          setIsOpen(true);
         } catch (error) {
-          console.error("Search error:", error)
-          setResults([])
+          console.error("Search error:", error);
+          setResults([]);
         } finally {
-          setIsLoading(false)
+          setIsLoading(false);
         }
       } else {
-        setResults([])
-        setIsOpen(false)
+        setResults([]);
+        setIsOpen(false);
       }
-    }
+    };
 
-    const timeoutId = setTimeout(searchDebounced, 300)
-    return () => clearTimeout(timeoutId)
-  }, [query])
+    const timeoutId = setTimeout(searchDebounced, 300);
+    return () => clearTimeout(timeoutId);
+  }, [query]);
 
   const handleSearch = () => {
     if (query.trim()) {
-      router.push(`/search?q=${encodeURIComponent(query.trim())}`)
-      setIsOpen(false)
+      router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+      setIsOpen(false);
     }
-  }
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      handleSearch()
+      handleSearch();
     }
-  }
+  };
 
   return (
     <div ref={searchRef} className={`relative ${className}`}>
@@ -81,7 +88,7 @@ export function SearchDropdown({ placeholder = "Search for songs, artists...", c
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyPress={handleKeyPress}
-          className="pl-12 pr-20 py-4 text-lg border-2 border-gray-200 focus:border-black rounded-full"
+          className="pl-12 pr-20 py-4 text-lg border-2 border-gray-200 focus:border-transparent rounded-full"
         />
         <Button
           onClick={handleSearch}
@@ -106,29 +113,44 @@ export function SearchDropdown({ placeholder = "Search for songs, artists...", c
                   className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors"
                 >
                   <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <Music className="w-4 h-4 text-gray-600" />
+                    <Image
+                      src={song.cover || "/placeholder.svg"}
+                      alt={`${song.title} cover`}
+                      width={40}
+                      height={40}
+                      className="rounded-lg object-cover h-full w-full"
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-black truncate">
                       {song.title} - {song.artist}
                     </p>
-                    {song.album && <p className="text-sm text-gray-500 truncate">{song.album}</p>}
+                    {song.album && (
+                      <p className="text-sm text-gray-500 truncate">
+                        {song.album}
+                      </p>
+                    )}
                   </div>
                 </Link>
               ))}
               {results.length === 5 && (
                 <div className="px-4 py-2 border-t border-gray-100">
-                  <button onClick={handleSearch} className="text-sm text-black hover:underline">
+                  <button
+                    onClick={handleSearch}
+                    className="text-sm text-black hover:underline"
+                  >
                     View all results for "{query}"
                   </button>
                 </div>
               )}
             </div>
           ) : query.trim().length > 0 ? (
-            <div className="p-4 text-center text-gray-500">No songs found for "{query}"</div>
+            <div className="p-4 text-center text-gray-500">
+              No songs found for "{query}"
+            </div>
           ) : null}
         </div>
       )}
     </div>
-  )
+  );
 }
