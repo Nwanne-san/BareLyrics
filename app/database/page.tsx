@@ -84,15 +84,15 @@ export default async function DatabasePage() {
             <CardHeader>
               <CardTitle className="text-xl text-black font-poppins flex items-center">
                 <Upload className="w-6 h-6 mr-2" />
-                Upload New Song
+                Upload lyric
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-600 mb-6">
-                Add new songs to the database. Include all song details, lyrics, and metadata to expand our collection.
+                Add lyrics to the database. Include all song details, lyrics, and metadata to expand our collection.
               </p>
               <Link href="/submit">
-                <Button className="w-full bg-black hover:bg-gray-800 text-white">Upload Song</Button>
+                <Button className="w-full bg-black hover:bg-gray-800 text-white">Upload Lyrics</Button>
               </Link>
             </CardContent>
           </Card>
