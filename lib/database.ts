@@ -37,6 +37,22 @@ export interface SongSubmission {
   updated_at: string;
 }
 
+export interface SongComment {
+  id: number;
+  song_id: number;
+  user_name?: string | null;
+  user_email?: string | null;
+  comment_text: string;
+  selected_lyrics?: string | null;
+  lyrics_start_position?: number | null;
+  lyrics_end_position?: number | null;
+  comment_type: "general" | "annotation" | "review";
+  rating?: number | null;
+  is_approved: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 // Mock database - fallback when Supabase is not available
 const mockSongs: Song[] = [
   {
@@ -590,6 +606,114 @@ export async function updateSong(
     return data;
   } catch (error) {
     console.error("updateSong error:", error);
+    throw error;
+  }
+}
+
+// Comments functions
+export async function getSongComments(songId: number): Promise<SongComment[]> {
+  try {
+    console.log("Fetching comments for song ID:", songId);
+
+    const { data, error } = await supabase
+      .from("song_comments")
+      .select("*")
+      .eq("song_id", songId)
+      .eq("is_approved", true)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Supabase getSongComments error:", error);
+      return [];
+    }
+
+    console.log("Comments fetched:", data);
+    return data || [];
+  } catch (error) {
+    console.error("getSongComments error:", error);
+    return [];
+  }
+}
+
+export async function createSongComment(
+  commentData: Omit<
+    SongComment,
+    "id" | "is_approved" | "created_at" | "updated_at"
+  >
+): Promise<SongComment> {
+  try {
+    console.log("Creating comment:", commentData);
+
+    const { data, error } = await supabase
+      .from("song_comments")
+      .insert([
+        {
+          song_id: commentData.song_id,
+          user_name: commentData.user_name,
+          user_email: commentData.user_email,
+          comment_text: commentData.comment_text,
+          selected_lyrics: commentData.selected_lyrics,
+          lyrics_start_position: commentData.lyrics_start_position,
+          lyrics_end_position: commentData.lyrics_end_position,
+          comment_type: commentData.comment_type,
+          rating: commentData.rating,
+          is_approved: true, // Auto-approve for now
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Supabase createSongComment error:", error);
+      throw new Error("Failed to create comment");
+    }
+
+    console.log("Comment created:", data);
+    return data;
+  } catch (error) {
+    console.error("createSongComment error:", error);
+    throw error;
+  }
+}
+
+export async function getAllComments(): Promise<SongComment[]> {
+  try {
+    const { data, error } = await supabase
+      .from("song_comments")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Supabase getAllComments error:", error);
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error("getAllComments error:", error);
+    return [];
+  }
+}
+
+export async function updateCommentStatus(
+  id: number,
+  isApproved: boolean
+): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from("song_comments")
+      .update({
+        is_approved: isApproved,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id);
+
+    if (error) {
+      console.error("Supabase updateCommentStatus error:", error);
+      throw new Error("Failed to update comment status");
+    }
+  } catch (error) {
+    console.error("updateCommentStatus error:", error);
     throw error;
   }
 }
