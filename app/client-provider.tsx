@@ -13,7 +13,7 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange
     >
       <LayoutWrapper>{children}</LayoutWrapper>
-      <Toaster />
+      <Toaster position="bottom-right" theme="dark" closeButton />
     </ThemeProvider>
   );
 }

@@ -109,14 +109,14 @@ export default function SongPage({ params }: { params: { id: string } }) {
       </div>
 
       <div className="container mx-auto px-4 py-4 sm:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 h-[calc(100vh-200px)]">
+        <div className="sm:grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 h-[calc(100vh-200px)]">
           {/* Main Content - Lyrics Priority */}
-          <div className="lg:col-span-3 order-1 overflow-y-auto scrollbar-hide">
+          <div className="lg:col-span-3 sm:order-1 overflow-y-auto scrollbar-hide">
             {/* Song Header with Actions */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-8 flex items-start justify-between"
+              className="mb-8 flex flex-col sm:flex-row sm:items-start justify-between"
             >
               <div className="flex-1">
                 <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black mb-2 font-poppins">
@@ -130,7 +130,7 @@ export default function SongPage({ params }: { params: { id: string } }) {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center space-x-2 ml-4">
+              <div className="flex  items-center space-x-2 ml-4">
                 <Button
                   onClick={() => setShowShareModal(true)}
                   variant="outline"
@@ -204,10 +204,10 @@ export default function SongPage({ params }: { params: { id: string } }) {
               transition={{ delay: 0.2 }}
             >
               <Card className="border-gray-200">
-                <CardContent className="p-6 md:p-8">
+                <CardContent className="p-4 md:p-8">
                   <div className="prose prose-lg max-w-none">
                     <pre
-                      className="whitespace-pre-wrap font-sans text-gray-800 leading-relaxed text-base md:text-lg cursor-text select-text"
+                      className="whitespace-pre-wrap font-sans text-gray-800 leading-relaxed text-sm md:text-lg cursor-text select-text"
                       onMouseUp={handleTextSelection}
                       onTouchEnd={handleTextSelection}
                     >
@@ -217,6 +217,20 @@ export default function SongPage({ params }: { params: { id: string } }) {
                 </CardContent>
               </Card>
             </motion.div>
+
+            <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-8 lg:hidden"
+              >
+                <CommentsSection
+                  songId={song.id}
+                  selectedLyrics={selectedLyrics}
+                  onClearSelection={clearSelection}
+                  isMobile={false}
+                />
+              </motion.div>
 
             {/* Correction Notice */}
             <motion.div
@@ -237,7 +251,7 @@ export default function SongPage({ params }: { params: { id: string } }) {
             </motion.div>
 
             {/* Mobile Comments Section */}
-            {showMobileComments && (
+            {/* {showMobileComments && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
@@ -248,10 +262,10 @@ export default function SongPage({ params }: { params: { id: string } }) {
                   songId={song.id}
                   selectedLyrics={selectedLyrics}
                   onClearSelection={clearSelection}
-                  isMobile={true}
+                  isMobile={false}
                 />
               </motion.div>
-            )}
+            )} */}
 
             {/* Similar Songs Section - Below lyrics on mobile */}
             {similarSongs.length > 0 && (
@@ -304,8 +318,8 @@ export default function SongPage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Fixed Sidebar - Secondary Info */}
-          <div className="lg:col-span-2 order-2 overflow-y-auto h-full">
-            <div className="sticky top-0 space-y-6">
+          <div className="lg:col-span-2 order-1 sm:order-2 sm:overflow-y-auto h-full scrollbar-hide">
+            <div className="sm:sticky sm:top-0 space-y-6">
               {/* Song Details Card */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
@@ -313,33 +327,49 @@ export default function SongPage({ params }: { params: { id: string } }) {
                 transition={{ delay: 0.1 }}
               >
                 <Card className="border-gray-200">
-                  <CardContent className="p-6">
-                    <Image
-                      src={song.cover || "/placeholder.svg"}
-                      alt={`${song.title} cover`}
-                      width={200}
-                      height={200}
-                      className="w-full aspect-square rounded-lg object-cover mb-4"
-                    />
-                    <div className="space-y-2 text-sm">
-                      {song.album && (
-                        <p>
-                          <span className="font-medium">Album:</span>{" "}
-                          {song.album}
+                  <CardContent className="p-4">
+                    <div className="flex items-start space-x-4 ">
+                      <div className="flex-1 min-w-0 text-base">
+                        <p className="font-semibold text-xl text-black text- truncate">
+                          {song.title} -
+                          <span className="ml-1 text-gray-600 text-base truncate">
+                            {song.artist}
+                          </span>
                         </p>
-                      )}
-                      {song.genre && (
-                        <p>
-                          <span className="font-medium">Genre:</span>{" "}
-                          {song.genre}
-                        </p>
-                      )}
-                      {song.year && (
-                        <p>
-                          <span className="font-medium">Year:</span> {song.year}
-                        </p>
-                      )}
+
+                        {song.album && (
+                          <p className="text-xs text-gray-500 truncate">
+                            {song.album}
+                          </p>
+                        )}
+                        {song.album && (
+                          <p>
+                            <span className="font-medium">Album:</span>{" "}
+                            {song.album}
+                          </p>
+                        )}
+                        {song.genre && (
+                          <p>
+                            <span className="font-medium">Genre:</span>{" "}
+                            {song.genre}
+                          </p>
+                        )}
+                        {song.year && (
+                          <p>
+                            <span className="font-medium">Year:</span>{" "}
+                            {song.year}
+                          </p>
+                        )}
+                      </div>
+                      <Image
+                        src={song.cover || "/placeholder.svg"}
+                        alt={`${song.title} cover`}
+                        width={80}
+                        height={80}
+                        className="w-ful aspect-square rounded-lg object-cover "
+                      />
                     </div>
+                    <div className="space-y-2 text-sm"></div>
                   </CardContent>
                 </Card>
               </motion.div>

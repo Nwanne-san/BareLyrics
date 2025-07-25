@@ -26,6 +26,7 @@ import {
   createSongComment,
   type SongComment,
 } from "@/lib/database";
+import { toast } from "sonner";
 
 interface CommentsSectionProps {
   songId: number;
@@ -107,6 +108,7 @@ export function CommentsSection({
         comment_type: newComment.comment_type,
         rating: newComment.comment_type === "review" ? newComment.rating : null,
       });
+      toast.success("Comment submitted successfully!");
 
       // Reset form
       setNewComment({
@@ -170,7 +172,7 @@ export function CommentsSection({
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <CardTitle className="flex items-center justify-between text-lg">
-            <div className="flex items-center">
+            <div className="flex items-center text">
               <MessageCircle className="w-5 h-5 mr-2" />
               Comments & Reviews ({comments.length})
             </div>
@@ -500,7 +502,7 @@ export function CommentsSection({
     <div className="space-y-6">
       {/* Comments Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold flex items-center">
+        <h3 className="text-base font-semibold flex items-center">
           <MessageCircle className="w-5 h-5 mr-2" />
           Comments & Reviews ({comments.length})
         </h3>
@@ -731,8 +733,8 @@ export function CommentsSection({
                 transition={{ delay: index * 0.1 }}
               >
                 <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-start space-x-3">
+                  <CardContent className="p-2">
+                    <div className="flex flex-co items-start space-x-3">
                       <Avatar className="w-8 h-8">
                         <AvatarFallback>
                           <User className="w-4 h-4" />
@@ -755,18 +757,19 @@ export function CommentsSection({
                               {comment.comment_type}
                             </span>
                           </Badge>
-                          {comment.rating && (
-                            <div className="flex items-center space-x-1">
-                              {renderStars(comment.rating)}
-                            </div>
-                          )}
+
                           <span className="text-xs text-gray-500">
                             {new Date(comment.created_at).toLocaleDateString()}
                           </span>
                         </div>
+                        {comment.rating && (
+                          <div className="flex items-center space-x-1 mb-1">
+                            {renderStars(comment.rating)}
+                          </div>
+                        )}
 
                         {comment.selected_lyrics && (
-                          <div className="bg-gray-50 border-l-4 border-blue-500 pl-3 py-2 mb-3">
+                          <div className="bg-gray-50 border-l-4 border-blue-500 pl-3 py-2 my-2">
                             <p className="text-sm italic text-gray-700">
                               "{comment.selected_lyrics}"
                             </p>
